@@ -5,6 +5,8 @@
 
 import pygame
 import Player
+import Text
+import PowerBar
 import os
  
 # Define some colors
@@ -34,6 +36,9 @@ img.set_colorkey(BLACK)
 player = Player.Player(0, 0, img)
 xCur = 0
 yCur = 0
+
+healthText = Text.Text(str(player.getHealth()), size[0] - 50, 15)
+healthBar = PowerBar.PowerBar(75, 15, 15)
  
 # -------- Main Program Loop -----------
 while not done:
@@ -51,6 +56,8 @@ while not done:
                 yCur = -2
             elif event.key == pygame.K_DOWN:
                 yCur = 2
+            elif event.key == pygame.K_SPACE:
+                player.takeDamage(1)
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -59,6 +66,7 @@ while not done:
                 yCur = 0
 
     player.update(xCur, yCur)
+    healthText.setText(str(player.getHealth()))
  
     # --- Game logic should go here
  
@@ -71,6 +79,8 @@ while not done:
     # background image.
     screen.fill(WHITE)
     screen.blit(player.getImage(), player.getPos())
+    screen.blit(healthText.getText(), healthText.getPos())
+    healthBar.draw(screen)
  
     # --- Drawing code should go here
  

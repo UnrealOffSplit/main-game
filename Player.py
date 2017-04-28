@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.health = 100
 
     def update(self, x, y):
         self.rect.x += x
@@ -35,5 +36,11 @@ class Player(pygame.sprite.Sprite):
 
     def getPos(self):
         return (self.rect.x, self.rect.y)
+
+    def takeDamage(self, damage=0):
+        self.health -= damage
+
+    def getHealth(self):
+        return self.health
 
         
