@@ -5,6 +5,7 @@
 
 import pygame
 import Player
+import Enemy
 import Text
 import PowerBar
 import os
@@ -33,12 +34,16 @@ clock = pygame.time.Clock()
 cwd = os.getcwd()
 img = pygame.image.load(cwd + "/Images/walk1.png").convert()
 img.set_colorkey(BLACK)
-player = Player.Player(0, 0, img)
+background = pygame.image.load(cwd + "/Images/street.png").convert()
+background = pygame.transform.scale(background, size)
+
+player = Player.Player(50, 200, img)
+enemy = Enemy.Enemy(1000, 500)
 xCur = 0
 yCur = 0
 
-healthText = Text.Text(str(player.getHealth()), size[0] - 50, 15)
-healthBar = PowerBar.PowerBar(75, 15, 15)
+healthText = Text.Text(str(player.getHealth()), size[0] - 50, 50)
+healthBar = PowerBar.PowerBar(75, 15, 50)
  
 # -------- Main Program Loop -----------
 while not done:
@@ -66,6 +71,8 @@ while not done:
                 yCur = 0
 
     player.update(xCur, yCur)
+    enemy.trackTarget(player)
+    healthBar.setPercent(player.getHealth())
     healthText.setText(str(player.getHealth()))
  
     # --- Game logic should go here
@@ -77,12 +84,16 @@ while not done:
  
     # If you want a background image, replace this clear with blit'ing the
     # background image.
-    screen.fill(WHITE)
+    screen.blit(background, [0, 0])
+
+
+    # --- Drawing code should go here
     screen.blit(player.getImage(), player.getPos())
+    screen.blit(enemy.getImage(), enemy.getPos())
     screen.blit(healthText.getText(), healthText.getPos())
     healthBar.draw(screen)
  
-    # --- Drawing code should go here
+
  
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()

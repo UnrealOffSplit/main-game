@@ -10,10 +10,12 @@ class PowerBar(pygame.sprite.Sprite):
 
     def __init__(self, percent=100, x=0, y=0, color=(255, 0, 0), width=100, height=25):
 
+        self.percent = 100 -percent
+
         pygame.sprite.Sprite.__init__(self)
 
         self.images = [pygame.Surface([width, height]),
-                       pygame.Surface([width - (percent / 100.0 * width), height])]
+                       pygame.Surface([width - (100 - percent / 100.0 * width), height])]
 
         self.colors = [(0, 0, 0), color]
         for i in range(2):
@@ -24,7 +26,7 @@ class PowerBar(pygame.sprite.Sprite):
         self.rect.y = y
         self.width = width
         self.height = height
-        self.percent = percent
+
 
 
     def draw(self, screen):
@@ -34,8 +36,8 @@ class PowerBar(pygame.sprite.Sprite):
             screen.blit(i, [self.rect.x, self.rect.y])
 
     def setPercent(self, percent):
-        self.percent = percent
-        self.images[1] = pygame.Surface([width - int((self.percent / 100) * 125), height - int(height / 10)])
-        self.images[1].fill(self.colors[2])
+        self.percent = 100 -percent
+        self.images[1] = pygame.Surface([self.width - (self.percent / 100.0 * self.width), self.height])
+        self.images[1].fill(self.colors[1])
 
         
