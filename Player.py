@@ -5,7 +5,7 @@
 import pygame
 import os
 
-img = pygame.image.load(os.getcwd() + "/Images/walk1.png")
+img = pygame.image.load(os.getcwd() + "/Images/Idle.png")
 
 class Player(pygame.sprite.Sprite):
 
@@ -13,15 +13,29 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = image
-        self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.health = 100
+        self.attack = 20
+        self.isDead = False
+        self.coolDown = 0
 
     def update(self, x, y):
-        self.rect.x += x
-        self.rect.y += y
+        if not self.isDead:
+            self.rect.x += x
+            self.rect.y += y
+        if self.coolDown:
+            self.coolDown -= 1
+        while self.rect.y < 300:
+            self.rect.y += 1
+        while self.rect.y > 700 - self.rect[3]:
+            self.rect.y -= 1
+            
+        while self.rect.x < 0:
+            self.rect.x += 1
+        while self.rect.x > 1200 - self.rect[2]:
+            self.rect.x -= 1
 
     def getImage(self):
         return self.image
@@ -39,8 +53,18 @@ class Player(pygame.sprite.Sprite):
 
     def takeDamage(self, damage=0):
         self.health -= damage
+        if self.health <= 0 and not self.isDead:
+            img = pygame.transform.rotate(self.image, -90.0)
+            self.setImage(img)
+            self.isDead = True
 
     def getHealth(self):
         return self.health
+
+    def performAttack(self, target):
+        if not self.coolDown:
+            if pygame.sprite.collide_rect(self, target):
+                target.takeDamage(self.attack)
+            self.coolDown = 60
 
         

@@ -9,12 +9,14 @@ import Enemy
 import Text
 import PowerBar
 import os
+from random import randint
  
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
  
 pygame.init()
  
@@ -32,22 +34,48 @@ clock = pygame.time.Clock()
 
 # Main variables
 cwd = os.getcwd()
-img = pygame.image.load(cwd + "/Images/walk1.png").convert()
-img.set_colorkey(BLACK)
+
+enemy = Enemy.Enemy(1000, 500)
+#25% Chance to be Arthur
+if randint(1, 5) != 1:
+    img = pygame.image.load(cwd + "/Images/Idle.png").convert()
+    img = pygame.transform.scale(img, [128, 128])
+    img.set_colorkey(RED)
+    gameMusic = pygame.mixer.music.load(cwd + "/Music/Main theme.wav")
+else:
+    img = pygame.image.load(cwd + "/Images/Arthur.png").convert()
+    img = pygame.transform.scale(img, [128, 128])
+    img.set_colorkey(RED)
+    gameMusic = pygame.mixer.music.load(cwd + "/Music/Coconuts.wav")
+    enemyImg = pygame.image.load(cwd + "/Images/blackKnight.png").convert()
+    enemyImg = pygame.transform.scale(enemyImg, [128, 128])
+    enemyImg.set_colorkey(BLUE)
+    enemy.setImage(enemyImg)
+
+
+
 background = pygame.image.load(cwd + "/Images/street.png").convert()
 background = pygame.transform.scale(background, size)
+gameOver = pygame.image.load(cwd + "/Images/GameOver.png").convert()
+gameOver = pygame.transform.scale(gameOver, size)
+win = pygame.image.load(cwd + "/Images/YouWin.png").convert()
+win = pygame.transform.scale(win, size)
 
 player = Player.Player(50, 200, img)
-enemy = Enemy.Enemy(1000, 500)
 xCur = 0
 yCur = 0
 
 healthText = Text.Text(str(player.getHealth()), size[0] - 50, 50)
+
 healthBar = PowerBar.PowerBar(75, 15, 50)
+
+#Audio
+pygame.mixer.music.play()
  
 # -------- Main Program Loop -----------
 while not done:
     # --- Main event loop
+    playerAttack = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
@@ -62,18 +90,25 @@ while not done:
             elif event.key == pygame.K_DOWN:
                 yCur = 2
             elif event.key == pygame.K_SPACE:
-                player.takeDamage(1)
-
+                playerAttack = True
+                
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 xCur = 0
             elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 yCur = 0
 
+    if playerAttack:
+        player.performAttack(enemy)
+        playerAttack = False
     player.update(xCur, yCur)
     enemy.trackTarget(player)
     healthBar.setPercent(player.getHealth())
-    healthText.setText(str(player.getHealth()))
+    healthText.setText(str(enemy.getHealth()))
+
+    if not pygame.mixer.music.get_busy():
+        pygame.mixer.music.rewind()
+        pygame.mixer.music.play()
  
     # --- Game logic should go here
  
@@ -88,10 +123,17 @@ while not done:
 
 
     # --- Drawing code should go here
-    screen.blit(player.getImage(), player.getPos())
-    screen.blit(enemy.getImage(), enemy.getPos())
-    screen.blit(healthText.getText(), healthText.getPos())
-    healthBar.draw(screen)
+    if not player.isDead and not enemy.isDead:
+        screen.blit(player.getImage(), player.getPos())
+        screen.blit(enemy.getImage(), enemy.getPos())
+        screen.blit(healthText.getText(), healthText.getPos())
+        healthBar.draw(screen)
+    else:
+        if player.isDead:
+            screen.blit(gameOver, [0, 0])
+        else:
+            screen.blit(win, [0, 0])
+        
  
 
  

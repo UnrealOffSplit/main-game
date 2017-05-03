@@ -15,7 +15,7 @@ class Text(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.font = pygame.font.SysFont('Calibri', 25, True, False)
         self.text = text
-        self.textSprite = self.font.render(self.text, True, (0, 0, 0))
+        self.textSprite = self.font.render(self.text, True, (255, 255, 255))
 
         self.rect = self.textSprite.get_rect()
         self.rect.x = x
@@ -23,7 +23,7 @@ class Text(pygame.sprite.Sprite):
 
     def setText(self, text):
         self.text = text
-        self.textSprite = self.font.render(self.text, True, (0, 0, 0))
+        self.textSprite = self.font.render(self.text, True, (255, 255, 255))
 
     def getText(self):
         return self.textSprite
