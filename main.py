@@ -34,23 +34,20 @@ clock = pygame.time.Clock()
 
 # Main variables
 cwd = os.getcwd()
+isArthur = False
 
-enemy = Enemy.Enemy(1000, 500)
 #25% Chance to be Arthur
 if randint(1, 5) != 1:
-    img = pygame.image.load(cwd + "/Images/Idle.png").convert()
-    img = pygame.transform.scale(img, [128, 128])
-    img.set_colorkey(RED)
     gameMusic = pygame.mixer.music.load(cwd + "/Music/Main theme.wav")
+    enemy = Enemy.Enemy(1000, 500)
+
 else:
-    img = pygame.image.load(cwd + "/Images/Arthur.png").convert()
-    img = pygame.transform.scale(img, [128, 128])
-    img.set_colorkey(RED)
     gameMusic = pygame.mixer.music.load(cwd + "/Music/Coconuts.wav")
-    enemyImg = pygame.image.load(cwd + "/Images/blackKnight.png").convert()
+    enemyImg = pygame.image.load(cwd + "/Images/Enemy/BlackKnight/Idle/blackKnight.png").convert()
     enemyImg = pygame.transform.scale(enemyImg, [128, 128])
     enemyImg.set_colorkey(BLUE)
-    enemy.setImage(enemyImg)
+    enemy = Enemy.Enemy(1000, 500, enemyImg)
+    isArthur = True
 
 
 
@@ -61,13 +58,16 @@ gameOver = pygame.transform.scale(gameOver, size)
 win = pygame.image.load(cwd + "/Images/YouWin.png").convert()
 win = pygame.transform.scale(win, size)
 
-player = Player.Player(50, 200, img)
+player = Player.Player(50, 200, isArthur)
 xCur = 0
 yCur = 0
 
 healthText = Text.Text(str(player.getHealth()), size[0] - 50, 50)
 
 healthBar = PowerBar.PowerBar(75, 15, 50)
+
+globalTimer = 0
+
 
 #Audio
 pygame.mixer.music.play()
@@ -83,8 +83,10 @@ while not done:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 xCur = -2
+                player.setImage(player.flip(False))
             elif event.key == pygame.K_RIGHT:
                 xCur = 2
+                player.setImage(player.flip(True))
             elif event.key == pygame.K_UP:
                 yCur = -2
             elif event.key == pygame.K_DOWN:
@@ -109,6 +111,8 @@ while not done:
     if not pygame.mixer.music.get_busy():
         pygame.mixer.music.rewind()
         pygame.mixer.music.play()
+
+    player.animate(globalTimer)
  
     # --- Game logic should go here
  
@@ -135,7 +139,7 @@ while not done:
             screen.blit(win, [0, 0])
         
  
-
+    globalTimer += 1
  
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()

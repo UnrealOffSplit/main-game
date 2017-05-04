@@ -5,14 +5,37 @@
 import pygame
 import os
 
-img = pygame.image.load(os.getcwd() + "/Images/Idle.png")
+path = os.getcwd() + "/Images/Player"
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, x=0, y=0, image=img):
+    def __init__(self, x=0, y=0, isArthur=False):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = image
+        self.images = []
+        self.imagesLeft = []
+        if not isArthur:
+            for file in os.listdir(path + "/Biker/Idle"):
+                image = pygame.image.load(path + "/Biker/Idle/" + file).convert()
+                image = pygame.transform.scale(image, [128, 128])
+                image.set_colorkey((255, 0, 0))
+                self.images.append(image)
+                image = pygame.transform.flip(image, True, False)
+                self.imagesLeft.append(image)
+
+        else:
+            for file in os.listdir(path + "/Arthur/Idle"):
+                image = pygame.image.load(path + "/Arthur/Idle/" + file).convert()
+                image = pygame.transform.scale(image, [128, 128])
+                image.set_colorkey((255, 0, 0))
+                self.images.append(image)
+                image = pygame.transform.flip(image, True, False)
+                self.imagesLeft.append(image)
+            
+        self.index = 0
+        self.image = self.images[self.index]
+        self.imageLeft = pygame.transform.flip(self.image, True, False)
+        self.imageRight = pygame.transform.flip(self.imageLeft, True, False)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -20,6 +43,7 @@ class Player(pygame.sprite.Sprite):
         self.attack = 20
         self.isDead = False
         self.coolDown = 0
+        self.faceRight = True
 
     def update(self, x, y):
         if not self.isDead:
@@ -66,5 +90,24 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.collide_rect(self, target):
                 target.takeDamage(self.attack)
             self.coolDown = 60
+
+    def animate(self, timer):
+        timer = timer % 60 + 1
+        if timer / 15 == 1:
+            self.index += 1
+            self.index = self.index % len(self.images)
+            if self.faceRight:
+                self.setImage(self.images[self.index])
+            else:
+                self.setImage(self.imagesLeft[self.index])
+
+    def flip(self, isRight):
+        if isRight:
+            self.faceRight = True
+            return self.images[self.index]
+        else:
+            self.faceRight = False
+            return self.imagesLeft[self.index]
+        
 
         

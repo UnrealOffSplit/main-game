@@ -6,7 +6,8 @@ import pygame
 import os
 from random import randint
 
-img = pygame.image.load(os.getcwd() + "/Images/EnemyIdle.png")
+img = pygame.image.load(os.getcwd() + "/Images/Enemy/Biker/EnemyIdle.png")
+img.set_colorkey((255, 0, 0))
 
 class Enemy(pygame.sprite.Sprite):
 
@@ -15,7 +16,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.image = image.convert()
         self.image = pygame.transform.scale(self.image, [128, 128])
-        self.image.set_colorkey((255, 0, 0))
+        self.imageLeft = pygame.transform.flip(self.image, True, False)
+        self.imageRight = pygame.transform.flip(self.imageLeft, True, False)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -62,8 +64,10 @@ class Enemy(pygame.sprite.Sprite):
             direction = [0, 0]
             if target.rect.x > self.rect.x + int(self.rect[2] / 2):
                 direction[0] = 1
+                self.setImage(self.imageLeft)
             elif target.rect.x + int(target.rect[2] / 2) < self.rect.x:
                 direction[0] = -1
+                self.setImage(self.imageRight)
 
             if target.rect.y > self.rect.y + int(self.rect[3] / 2):
                 direction[1] = 1
