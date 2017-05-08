@@ -93,7 +93,7 @@ class Player(pygame.sprite.Sprite):
 
     def animate(self, timer):
         timer = timer % 60 + 1
-        if timer / 15 == 1:
+        if timer / 5. == 1:
             self.index += 1
             self.index = self.index % len(self.images)
             if self.faceRight:
